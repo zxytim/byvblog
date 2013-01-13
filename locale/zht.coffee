@@ -24,5 +24,6 @@ module.exports =
   'posts': '日誌列表'
   'new post': '新日誌'
   'view post': '查看日誌'
+  'related posts': '相關日誌'
   'log in': '登入'
   'log out': '登出'

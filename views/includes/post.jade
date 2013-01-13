@@ -1,4 +1,4 @@
-mixin post(post)
+mixin post(post, inList)
   article.post.hentry.clearfix(data-post-id=post.id)
     - if (post.list)
       aside.entry-meta
@@ -22,3 +22,10 @@ mixin post(post)
         h1
           a.post_header_link(href=langLink('/' + post.id), data-post-id=post.id)= post.title
       !{post.contents}
+      - if (!inList && post.list)
+        section.related-post
+          h2= label('Related posts')
+          ul
+            each related in relatedPosts
+              li
+                a(href=langLink('/' + related.id))= related.title

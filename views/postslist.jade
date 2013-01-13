@@ -11,7 +11,7 @@ block banner-image
 block content
   #main.postlist(role="main")
     each post in posts
-      mixin post(post)
+      mixin post(post, true)
     mixin pagination(postId)
 
 block scripts
