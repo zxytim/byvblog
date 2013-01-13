@@ -2,7 +2,7 @@ extends layout
 include includes/post
 
 block title
-  title= post.title + ' - BYVoid'
+  title= post.title + " - " + config.site.title
   - if (!language)
     != css(post.language)
 

@@ -54,6 +54,7 @@ exports.displayPost = (req, res, next) ->
     archives: archives
     recentPosts: recentPosts
     relatedPosts: relatedPosts
+    config: require '../config'
 
 exports.displayTag = (req, res, next) ->
   language = req.params[1]
