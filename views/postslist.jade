@@ -3,7 +3,7 @@ include includes/post
 include includes/pagination
 
 block title
-  title= '首䈎'
+  title= label('Homepage') + " - " + config.site.title
 
 block banner-image
   img.intro-img(src="/images/banner-bg-3.jpg")

@@ -22,6 +22,7 @@ exports.displayPostList = (req, res, next) ->
     archives: archives
     recentPosts: recentPosts
     page: page
+    config: require '../config'
 
 exports.displayPost = (req, res, next) ->
   language = req.params[1]

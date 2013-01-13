@@ -219,7 +219,7 @@ Post::render = (language, next) ->
         post.converted = 'opencc'
         rendered = true
     else if language is 'en'
-      translateLink = 'http://translate.google.com/translate?act=url&hl=en&ie=UTF8sl=auto&tl=en&u=' + config.site.url + post.id
+      translateLink = 'http://translate.google.com/translate?act=url&hl=en&ie=UTF8sl=auto&tl=en&u=' + config.site.url + encodeURIComponent(post.id)
       translateTip = 'This post is written in Chinese. If you have trouble reading it, please use [Google Translate](' + translateLink + ')\n\n'
       post.title = self.contents[0].title
       post.contents = translateTip + self.contents[0].contents
