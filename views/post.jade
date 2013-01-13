@@ -8,6 +8,11 @@ block title
 
 block content
   mixin post(post)
+  h2= label('Related posts')
+  ul
+    each related in relatedPosts
+      li
+        a(href=langLink('/' + related.id))= related.title
   - if (session.user)
     a(href='/admin/edit/' + post.guid)= label('Edit post')
   #disqus_thread

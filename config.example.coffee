@@ -15,6 +15,8 @@ module.exports =
     feedPosts: 5
     popularPosts: 30
     recentPosts: 5
+    relatedPosts: 20
+    relatedPostsFast: true
   categories: [
     '中文與漢語',
     '生活點滴',

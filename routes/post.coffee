@@ -45,13 +45,15 @@ exports.displayPost = (req, res, next) ->
   Post.getPopularPosts config.options.popularPosts, obtain popularPosts
   Post.getArchive obtain archives
   Post.getRecentPosts config.options.recentPosts, obtain recentPosts
-  
+
+  post.relatedPosts obtain(relatedPosts)
   post.render language, obtain(post)
   res.render 'post',
     post: post
     popularPosts: popularPosts
     archives: archives
     recentPosts: recentPosts
+    relatedPosts: relatedPosts
 
 exports.displayTag = (req, res, next) ->
   language = req.params[1]

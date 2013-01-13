@@ -37,6 +37,7 @@ postSchema = new mongoose.Schema
   list:
     type: Boolean
     index: true
+  related: [String]
 
 module.exports = Post = mongoose.model 'Post', postSchema
 
@@ -233,3 +234,37 @@ Post::render = (language, next) ->
   if self.contentsFormat is 'markdown'
     post.contents = marked post.contents
   next null, post
+
+Post::relatedPosts = (next) ->
+  self = this
+  if config.options.relatedPostsFast
+    return self.relatedPostsFast next
+  
+  relatedPosts = []
+  for guid in self.related
+    Post.findOne {guid: guid}, obtain(post)
+    if post?
+      post.title = post.contents[0].title
+      relatedPosts.push post
+      if relatedPosts.length is config.options.relatedPosts
+        break
+  next null, relatedPosts
+
+Post::relatedPostsFast = (next) ->
+  self = this
+  
+  potRelatedPosts = {}
+  for tag in self.tags
+    Post.find {tags: tag}, obtain(posts)
+    for post in posts
+      potRelatedPosts[post.guid] = post
+  
+  relatedPosts = []
+  for guid in Object.keys(potRelatedPosts)
+    post = potRelatedPosts[guid]
+    post.title = post.contents[0].title
+    relatedPosts.push post
+    if relatedPosts.length is config.options.relatedPosts
+      break
+  
+  next null, relatedPosts
