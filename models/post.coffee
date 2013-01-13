@@ -2,6 +2,7 @@
 mongoose = require '../lib/mongoose'
 translate = require '../lib/translate'
 utils = require '../lib/utils'
+config = require '../config'
 marked = require 'marked'
 
 contentSchema = new mongoose.Schema
@@ -205,7 +206,7 @@ Post::render = (language, next) ->
       if content
         translate.zhtToZhs content.title, obtain(post.title)
         translate.zhtToZhs content.contents, obtain(post.contents)
-        post.contents = marked post.contents
+        post.contents = post.contents
         post.converted = 'opencc'
         rendered = true
     else if language is 'zht'
@@ -213,9 +214,15 @@ Post::render = (language, next) ->
       if content
         translate.zhsToZht content.title, obtain(post.title)
         translate.zhsToZht content.contents, obtain(post.contents)
-        post.contents = marked post.contents
+        post.contents = post.contents
         post.converted = 'opencc'
         rendered = true
+    else if language is 'en'
+      translateLink = 'http://translate.google.com/translate?act=url&hl=en&ie=UTF8sl=auto&tl=en&u=' + config.site.url + post.id
+      translateTip = 'This post is written in Chinese. If you have trouble reading it, please use [Google Translate](' + translateLink + ')\n\n'
+      post.title = self.contents[0].title
+      post.contents = translateTip + self.contents[0].contents
+      rendered = true
   
   if not rendered
     post.converted = 'translate'
