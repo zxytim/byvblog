@@ -137,6 +137,7 @@ Post.getTags = (next) ->
   next null, result
 
 parseTags = (tags) ->
+  console.log tags
   return [] if not tags
   tags = tags.split ','
   for i of tags

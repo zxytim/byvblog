@@ -15,7 +15,7 @@ block content
     .control-group
       label(for='postTags')= label('Tags')
       .controls
-        input#postTagsHidden(name='post[tags]', placeholder='Tags', value=post?post.tags:'', type='hidden')
+        input#postTagsHidden(name='post[tags]', placeholder='Tags', data-alltags=allTags, value=post?post.tags:'', type='hidden')
         input#postTagsAdd(placeholder='Tags')
         button(id="addTag", type='button') Add
         select#postTagsSelect(data-placeholder='choose post tags', multiple)
