@@ -30,6 +30,7 @@ exports.displayPost = (req, res, next) ->
   if language? and not (language in config.languages)
     return next()
   
+  postId = encodeURIComponent(postId).toLowerCase()
   Post.findOne {id: postId}, obtain post
   if post is null
     return next()

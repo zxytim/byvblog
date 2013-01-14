@@ -28,7 +28,7 @@ postSchema = new mongoose.Schema
   clicks:
     type: Number
     index: true
-  tags: 
+  tags:
     type: [String]
     index: true
   private:

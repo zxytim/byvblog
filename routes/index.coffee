@@ -42,6 +42,9 @@ routes = [
   }, {
     path: /^\/((.{2,3})\/|)(.+?)(\/|)$/
     GET: post.displayPost
+  }, {
+    path: /^\/(\%.*)/
+    GET: post.displayPost
   }
 ]
 
