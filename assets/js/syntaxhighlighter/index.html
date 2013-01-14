@@ -1,0 +1,424 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Hello SyntaxHighlighter</title>
+	<script type="text/javascript" src="scripts/shCore.js"></script>
+	<script type="text/javascript" src="scripts/shBrushJScript.js"></script>
+	<script type="text/javascript" src="scripts/shBrushCpp.js"></script>
+	<link type="text/css" rel="stylesheet" href="styles/shCoreDefault.css"/>
+	<script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+
+<body style="background: white; font-family: Helvetica">
+
+<h1>Hello SyntaxHighlighter</h1>
+<pre class="brush: js;">
+function helloSyntaxHighlighter()
+{
+	return "hi!";
+}
+</pre>
+
+<pre class="brush: cpp">
+#define STDIO
+
+/*
+
+ * $File: index.html
+
+ * $Date: Mon Jan 14 23:01:58 2013 +0800
+
+ * $Author: Zhou Xinyu <zxytim@gmail.com>
+
+ *
+
+ * Problem Description
+
+ *      calculate sum(lcm(i, n), i, 1, n) with 3 * 10^5 test cases
+
+ *
+
+ * Solution
+
+ *  ans = sigma(lcm(i, n), i, 1, n)
+
+ *      = n * sigma(i / gcd(i, n), i, 1, n)
+
+ *      = n * sigma(i / gcd(i, n), i, 1, n)
+
+ *      = n * sigma(sum_of_coprime_under(n / d), d | n)
+
+ *
+
+ *
+
+ *      S = sum_of_coprime_under(n)
+
+ *        = a[0] + a[1] + a[2] + ... + a[phi(n)]
+
+ *
+
+ *      because gcd(a[i], n) = 1 --> gcd(n - a[i], n) = 1
+
+ *          and a[i] are all different,
+
+ *      S = (n - a[0]) + (n - a[1]) + ... + (n - a[phi(n)])
+
+ *      2S =  n * phi(n)
+
+ *      S = n * phi(n) / 2
+
+ *      
+
+ *      so
+
+ *  ans = n * sigma(sum_of_coprime_under(n / d), d | n)
+
+ *      = n * sigma(sum_of_coprime_under(d), d | n)
+
+ *      = sigma(d * phi(d), d | n) * n / 2
+
+ *
+
+ *  assume 
+
+ *      n = p[0]^a[0] * p[1]^a[1] * ... * p[m]^a[m]
+
+ *  then 
+
+ *        sigma(d * phi(d), d | n)
+
+ *      = pi(sigma(p[i]^j * phi(p[i]^j), 0 <= j <= a[i]), 1 <= i <= m)
+
+ *  and this can be done during the process of generating primes under n
+
+ *  in a O(n) algorithm
+
+ *
+
+ *  thus we can calculate the answer for every 1 <= i <= n
+
+ *  in O(n) time, and answer the query immediately
+
+ *
+
+ *  Time Complexity: O(max_number + number_of_query)
+
+ */
+
+ 
+
+#define INPUT   "LCMSum.in"
+
+#define OUTPUT  "LCMSum.out"
+
+ 
+
+#include <cstdio>
+
+#include <cassert>
+
+ 
+
+namespace Solve
+
+{
+
+    const int NUM_MAX = 1000005, 
+
+          N_QUERY_MAX = 300000,
+
+          N_PRIME_MAX = 100000;
+
+ 
+
+    typedef long long int Bignum_t;
+
+ 
+
+    int query[N_QUERY_MAX];
+
+    void solve(FILE *fin, FILE *fout);
+
+    void init(int nmax);
+
+ 
+
+    Bignum_t ans[NUM_MAX];
+
+}
+
+ 
+
+void Solve::init(int n)
+
+{
+
+    static int min_factor[NUM_MAX],
+
+               div_min_factor[NUM_MAX],
+
+               prod_min_factor[NUM_MAX];
+
+    static int prime[N_PRIME_MAX],
+
+               nprime = 0;
+
+ 
+
+    ans[1] = 1;
+
+    min_factor[1] = 1;
+
+    div_min_factor[1] = 1;
+
+    prod_min_factor[1] = 1;
+
+ 
+
+ 
+
+    for (int register i = 2; i <= n; i ++)
+
+    {
+
+        if (!min_factor[i]) // is prime
+
+        {
+
+            min_factor[i] = i;
+
+            prod_min_factor[i] = i;
+
+            div_min_factor[i] = 1;
+
+            prime[nprime ++] = i;
+
+        }
+
+ 
+
+        Bignum_t register tmp = prod_min_factor[i];
+
+        //tmp = (tmp * tmp - 1) / (min_factor[i] + 1) * min_factor[i] + 1;
+
+        tmp *= tmp;
+
+        tmp --;
+
+        tmp /= min_factor[i] + 1;
+
+        tmp *= min_factor[i];
+
+        tmp ++;
+
+        ans[i] = ans[div_min_factor[i]] * tmp;
+
+ 
+
+        for (int register *p = prime, pmax = n / i; *p <= pmax; p ++)
+
+        {
+
+            int register num = *p * i;
+
+            min_factor[num] = *p;
+
+            if (i % *p)
+
+            {
+
+                prod_min_factor[num] = *p;
+
+                div_min_factor[num] = i;
+
+            }
+
+            else
+
+            {
+
+                prod_min_factor[num] = prod_min_factor[i] * (*p);
+
+                div_min_factor[num] = div_min_factor[i];
+
+                break;
+
+            }
+
+        }
+
+    }
+
+ 
+
+    //for (int i = 2; i <= n; i ++)     //  ans[i] = (ans[i] + 1) * i >> 1;
+
+}
+
+ 
+
+void Solve::solve(FILE *fin, FILE *fout)
+
+{
+
+    const int BUFFER_LEN = 1024 * 5;
+
+    static char buffer[BUFFER_LEN];
+
+    char *ptr = buffer, *buf_end = ptr + 1;
+
+#define PTR_NEXT() 
+
+    { 
+
+        ptr ++; 
+
+        if (ptr == buf_end) 
+
+        { 
+
+            ptr = buffer; 
+
+            buf_end = buffer + fread(buffer, 1, BUFFER_LEN, fin); 
+
+        } 
+
+    }
+
+#define READ_INT(_x_) 
+
+    { 
+
+        while ((*ptr < '0' || *ptr > '9') && *ptr != '-') 
+
+        PTR_NEXT(); 
+
+        bool _nega_ = false; 
+
+        if (*ptr == '-') 
+
+        { 
+
+            _nega_ = true; 
+
+            PTR_NEXT(); 
+
+        } 
+
+        int register _n_ = 0; 
+
+        while (*ptr >= '0' && *ptr <= '9') 
+
+        { 
+
+            _n_ = _n_ * 10 + *ptr - '0'; 
+
+            PTR_NEXT(); 
+
+        } 
+
+        if (_nega_) 
+
+        _n_ = - _n_; 
+
+        (_x_) = (_n_); 
+
+    }
+
+ 
+
+    PTR_NEXT();
+
+ 
+
+    int nmax = 1, nquery;
+
+ 
+
+    READ_INT(nquery);
+
+    for (int register *q = query, i = 0; i < nquery; i ++, q ++)     {         int register t;         READ_INT(t);         *q = t;         if (t > nmax)
+
+            nmax = t;
+
+    }
+
+ 
+
+    init(nmax);
+
+ 
+
+    static char out_buf[N_QUERY_MAX * 20];
+
+    char register *buf_pos = out_buf;
+
+ 
+
+    static char buf[20];
+
+    for (int register i = 0, *q = query; i < nquery; i ++, q ++)     {         Bignum_t num = (ans[*q] + 1) * (*q) >> 1;
+
+ 
+
+        char register *pbuf = buf;
+
+ 
+
+        while (num) // @num > 0
+
+            *(pbuf ++) = num % 10 + '0', num /= 10;
+
+        while ((pbuf -- )> buf)
+
+            *(buf_pos ++) = *pbuf;
+
+        *(buf_pos ++) = 'n';
+
+    }
+
+    *(buf_pos) = '�';
+
+    fputs(out_buf, fout);
+
+#undef PTR_NEXT
+
+#undef READ_INT
+
+ 
+
+}
+
+ 
+
+int main()
+
+{
+
+#ifdef STDIO
+
+    Solve::solve(stdin, stdout);
+
+#else
+
+    FILE *fin = fopen(INPUT, "r"),
+
+         *fout = fopen(OUTPUT, "w");
+
+    Solve::solve(fin, fout);
+
+    fclose(fin);
+
+    fclose(fout);
+
+#endif
+
+    return 0;
+
+}
+
+</pre>
+
+</html>

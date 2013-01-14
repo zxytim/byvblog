@@ -2,6 +2,8 @@ extends layout
 
 block title
   title= 'Edit Post'
+  != css('chosen/chosen/chosen')
+  != js('admin')
 
 block content
   form(method='post')
@@ -13,7 +15,13 @@ block content
     .control-group
       label(for='postTags')= label('Tags')
       .controls
-        input#postTags(name='post[tags]', placeholder='Tags', value=post?post.tags:'')
+        input#postTagsHidden(name='post[tags]', placeholder='Tags', value=post?post.tags:'', type='hidden')
+        input#postTagsAdd(placeholder='Tags')
+        button(id="addTag", type='button') Add
+        select#postTagsSelect(data-placeholder='choose post tags', multiple)
+          - console.log (post.tags)
+          each tag in allTags
+            option(value=tag, selected=post.tags.indexOf(tag) >= 0)= tag
         p Separate with comma
     .control-group
       label(for='postClicks')= label('Clicks')
@@ -70,4 +78,3 @@ block content
           a(href='/' + post.id)= label('View post')
 
 block scripts
-  script

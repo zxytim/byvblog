@@ -8,10 +8,28 @@
 #= require jquery.quovolver
 #= require jquery.fancybox-1.3.4
 #= require behaviours
+#= require syntaxhighlighter/scripts/shCore
+#= require syntaxhighlighter/scripts/shBrushCpp
+#= require syntaxhighlighter/scripts/shBrushJScript
+#= require underscore-min
 
 $ = jQuery
 $ ->
-  hljs.initHighlightingOnLoad()
+  #hljs.initHighlightingOnLoad()
+  preTagEscape = (str) ->
+    escape =
+      '<': '&lt;'
+      '>': '&gt;'
+    for from, to of escape
+      regex = new RegExp("[#{from}]", "g")
+      str = str.replace(regex, to)
+    str
+      
+  $('pre').each (index, elem) ->
+    lines = preTagEscape($(elem).html()).split('\n')
+    remain = lines.splice(0, lines.length - 1)
+    $(elem).html(remain.join('\n'))
+  SyntaxHighlighter.all()
   $('.tab_content').hide()
   $('ul.tabs li:first').addClass('active').show()
   $('.tab_content:first').show()

@@ -28,10 +28,13 @@ exports.logout = (req, res, next) ->
   res.redirect '/admin'
 
 exports.newPostPage = (req, res, next) ->
+  console.log "newPostPage"
   if not req.session.user?
     return res.redirect '/admin/login'
+  Post.allTags obtain(allTags)
   res.render 'admin/editpost',
     post: null
+    allTags: allTags
 
 exports.newPost = (req, res, next) ->
   if not req.session.user?
@@ -45,6 +48,7 @@ exports.newPost = (req, res, next) ->
   res.redirect '/admin/edit/' + post.guid
 
 exports.editPostPage = (req, res, next) ->
+  console.log "editPostPage"
   if not req.session.user?
     return res.redirect '/admin/login'
   postGuid = req.params[0]
@@ -60,10 +64,13 @@ exports.editPostPage = (req, res, next) ->
     languages[contents.language] = contents
   post.contents = languages
     
+  Post.allTags obtain(allTags)
   res.render 'admin/editpost',
     post: post
+    allTags: allTags
   
 exports.editPost = (req, res, next) ->
+  console.log "editPost"
   if not req.session.user?
     return res.redirect '/admin/login'
   postGuid = req.params[0]
@@ -75,5 +82,11 @@ exports.editPost = (req, res, next) ->
     res.redirect '/admin/edit/' + savedPost.guid
   catch err
     req.session.error = err.toString()
+    Post.allTags obtain allTags
     res.render 'admin/editpost',
       post: post
+      allTags: allTags
+
+exports.allTags = (req, res, next) ->
+  Post.allTags obtain tags
+  res.json tags

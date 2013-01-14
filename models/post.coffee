@@ -268,3 +268,11 @@ Post::relatedPostsFast = (next) ->
       break
   
   next null, relatedPosts
+
+Post.allTags = (next) ->
+  Post.find {}, obtain(posts)
+  tags = {}
+  for post in posts
+    for tag in post.tags
+      tags[tag] = 1
+  next null, (Object.keys tags).sort()

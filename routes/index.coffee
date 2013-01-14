@@ -1,6 +1,7 @@
 post = require('./post')
 feed = require('./feed')
 admin = require('./admin')
+test = require './test'
 
 routes = [
   {
@@ -25,6 +26,9 @@ routes = [
     path: /^\/admin$/
     GET: admin.index
   }, {
+    path: /^\/admin\/all-tags$/
+    POST: admin.allTags
+  }, {
     path: /^\/admin\/login$/
     GET: admin.loginPage
     POST: admin.login
@@ -39,6 +43,9 @@ routes = [
     path: /^\/admin\/edit\/(.+)$/
     GET: admin.editPostPage
     POST: admin.editPost
+  }, {
+    path: /^\/test$/
+    GET: test.index
   }, {
     path: /^\/((.{2,3})\/|)(.+?)(\/|)$/
     GET: post.displayPost
