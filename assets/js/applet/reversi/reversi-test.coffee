@@ -10,6 +10,9 @@ KillerTable = Core.KillerTable
 settings = Core.settings
 
 [black, white] = [settings.black, settings.white]
+turn2str = {}
+turn2str[black] = 'black'
+turn2str[white] = 'white'
 
 flipTurn = (turn) ->
   if turn is black then white else black
@@ -53,13 +56,13 @@ main = () ->
     rb = new ReversiBoard(n) #randBoard(10)
     rb.fromString("""
 00000000
+00001000
+00001120
+00222210
+01111111
+01001000
+10001200
 00000000
-00021110
-02221100
-00022100
-00022210
-00022201
-00001020
 
     """)
 #rb = randBoard(10)
@@ -91,7 +94,7 @@ main = () ->
 
 
   while not board.gameEnds()
-    print "#{turn} turn"
+    print "#{turn2str[turn]} turn"
     if not board.missTurn turn
       [x, y] = ai[turn].nextStep board, turn
       board.putChess x, y, turn

@@ -232,31 +232,31 @@ class ReversiSearchState
     @step = 0
     @alpha = -infVal
     @beta = infVal
-    @lastPos = null
+    @lastMove = [-1, -1]
     [@nMyChess, @nOpChess] = @board.getParams @turn
     @nMissedTurn = 0
 
   missTurn: () ->
-    @history.push [0, @alpha, @beta, @turn, @nMyChess, @nOpChess, @nMissedTurn, @lastPos]
+    @history.push [0, @alpha, @beta, @turn, @nMyChess, @nOpChess, @nMissedTurn, @lastMove]
     @nMissedTurn += 1
     @turn = flipTurn @turn
-    @lastPos = null
+    @lastMove = [-1, -1]
     [@alpha, @beta] = [-@beta, -@alpha]
     [@nMyChess, @nOpChess] = [@nOpChess, @nMyChess]
 
   putChess: (x, y) ->
-    @history.push [1, @alpha, @beta, @turn, @nMyChess, @nOpChess, @nMissedTurn, @lastPos]
+    @history.push [1, @alpha, @beta, @turn, @nMyChess, @nOpChess, @nMissedTurn, @lastMove]
     @board.putChess x, y, @turn
     @turn = flipTurn @turn
     @step += 1
     @depth += 1
     @nMissedTurn = 0
-    @lastPos = [x, y]
+    @lastMove = [x, y]
     [@alpha, @beta] = [-@beta, -@alpha]
     [@nMyChess, @nOpChess] = @board.getParams @turn
 
   rollback: () ->
-    [type, @alpha, @beta, @turn, @nMyChess, @nOpChess, @nMissedTurn, @lastPos] = @history.pop()
+    [type, @alpha, @beta, @turn, @nMyChess, @nOpChess, @nMissedTurn, @lastMove] = @history.pop()
     if type
       @step -= 1
       @depth -= 1
@@ -342,19 +342,68 @@ class KillerTable
     @squareListMap = newTable () -> newTable()
 
 
+    @defaultList = new List()
+
     for x in [0..@n - 1] by 1
       for y in [0..@n - 1] by 1
         if board[x][y] is empty
+          @defaultList.append [x, y]
           for i in [0..@n - 1] by 1
             for j in [0..@n - 1] by 1
               if board[i][j] is empty and (i isnt x or j isnt y)
-                @squareList[x][y].append i * @n + j
+                @squareList[x][y].append [i, j]
                 @squareListMap[x][y][i][j] = @squareList[x][y].last()
 
-    # TODO
-    update: (x, y, board) ->
-      list = @squareList[x][y]
-      map = @squareListMap[x][y]
+  check: (x, y) ->
+    assert(x isnt -1 and y isnt -1, "x, y in range in check")
+    list = @squareList[x][y]
+    map = @squareListMap[x][y]
+
+    [cur, end] = [list.head.next, list.tail]
+    while cur isnt end
+      [x, y] = cur.data
+      assert(map[x][y] is cur, "#{x},#{y} map failed")
+      cur = cur.next
+
+  oneStepPrior: (list, map, x, y) ->
+    node = map[x][y]
+    if node.prev is list.head
+      return false
+
+    # move one step prior
+    prev = node.prev
+    a = prev.prev
+    b = node.next
+    a.next = node
+    node.prev = a
+
+    prev.next = b
+    b.prev = prev
+
+    node.next = prev
+    prev.prev = node
+    
+    [x, y] = node.data
+    map[x][y] = node
+    [x, y] = prev.data
+    map[x][y] = prev
+
+    return true
+
+  update: (lastX, lastY, x, y) ->
+    return if lastX is -1 or lastY is -1
+    list = @squareList[lastX][lastY]
+    map = @squareListMap[lastX][lastY]
+    if @oneStepPrior list, map, x, y
+      if @oneStepPrior list, map, x, y
+        if @oneStepPrior list, map, x, y
+          @oneStepPrior list, map, x, y
+
+  getListBeginEnd: (x, y) ->
+    if x is -1 or y is -1
+      return [@defaultList.head.next, @defaultList.tail]
+    return [@squareList[x][y].head.next, @squareList[x][y].tail]
+
 
 class Reversi
   constructor: (n) ->
@@ -489,45 +538,62 @@ class Reversi
     other = flipTurn turn
     turn = state.turn
     fliped = false
-    for x in [0..@n-1] by 1
-      for y in [0..@n-1] by 1
+
+    bestX = null; bestY = null
+
+    [lastX, lastY] = state.lastMove
+    [cur, end] = @killerTable.getListBeginEnd lastX, lastY
+
+    while cur isnt end
+      [x, y] = cur.data
+
+      loop
         if @forwardPrune state, x, y
           forwardPrunedSquares.push [x, y]
-          continue
-        if state.board.canPutChess x, y, turn
-          fliped = true
+          break
+        if not state.board.canPutChess x, y, turn
+          break
 
-          if @enableZeroWindow
-            alpha = state.alpha
-            beta = state.beta
+        fliped = true
 
-            state.putChess x, y
+        if @enableZeroWindow
+          alpha = state.alpha
+          beta = state.beta
 
-            # zero windows search
-            state.alpha = -alpha - epsilon
+          state.putChess x, y
+
+          # zero windows search
+          state.alpha = -alpha - epsilon
+          state.beta = -alpha
+
+          val = -@doSearch state
+
+          # if alpha value is imporved
+          # do complete re-search
+          if val > alpha
+            @nZeroWindowFail += 1
+            state.alpha = -beta
             state.beta = -alpha
-
             val = -@doSearch state
-
-            # if alpha value is imporved
-            # do complete re-search
-            if val > alpha
-              @nZeroWindowFail += 1
-              state.alpha = -beta
-              state.beta = -alpha
-              val = -@doSearch state
-            else
-              @nZeroWindowCutoff += 1
           else
-            state.putChess x, y
-            val = -@doSearch state
+            @nZeroWindowCutoff += 1
+        else
+          state.putChess x, y
+          val = -@doSearch state
 
-          state.rollback()
+        state.rollback()
 
-          if val >= state.beta
-            return val
-          if val >= state.alpha
-            state.alpha = val
+        if val >= state.beta
+          return val
+        if val > state.alpha
+          state.alpha = val
+
+          # updateKillerTable
+          @killerTable.update lastX, lastY, x, y
+
+        break
+        
+      cur = cur.next
 
     ret = state.alpha
     if not fliped
