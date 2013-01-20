@@ -405,53 +405,6 @@ class KillerTable
     return [@squareList[x][y].head.next, @squareList[x][y].tail]
 
 
-class HashTable
-  constructor: (@sizeMax= 1000000) ->
-    @size = 0
-    @hash = {}
-
-  genHashKey: (board, turn) ->
-    ret = []
-    cnt = 0
-    for x in [0..board.n-1] by 1
-      for y in [0..board.n-1] by 1
-        key = key * 2 + (if board[x][y] is black then 1 else 0)
-        cnt += 1
-        if cnt is 33
-          ret.push key
-          cnt = 0
-          key = 0
-    key = key * 2 + (if turn is black then 1 else 0)
-    ret.push key
-    ret
-
-  hashMove: (board, turn, x, y) ->
-    return if @size is @sizeMax
-    # XXX: only for two digit hash
-    [a, b] = @genHashKey board, turn
-    h = @hash[a]
-    h = {} if h is undefined
-    if not h.hasOwnProperty b
-      @size += 1
-    h[b] = [x, y]
-
-  fetchMove: (board, turn) ->
-    # XXX: only for two digit hash
-    [a, b] = @genHashKey board, turn
-    h = @hash[a]
-    return [-1, -1] if h is undefined
-    ret = h[b]
-    return [-1, -1] if ret is undefined
-    ret
-
-  clear: () ->
-    for key0, subhash of @hash
-      for key1 of subhash
-        delete subhash[key1]
-      delete hash[key0]
-    @size = 0
-    
-    
 class Reversi
   constructor: (n) ->
     @n = n
@@ -462,13 +415,9 @@ class Reversi
     @settingsDefault =
       searchDepthMax: 9
       searchTimeMax: 3 # in second
-      enableForwordPrunning: true
       enableZeroWindow: false
-      enableIterativeDeepening: false
-      enableHashTable: false
 
     @killerTable = null
-    @hashTable = null
     @nState = 0
     @depthMax = 0
 
@@ -571,7 +520,6 @@ class Reversi
 
   # XXX: may cause missTurn fault, not fixed
   forwardPrune: (state, x, y) ->
-    return false if not @enableForwordPrunning
     return true if @forwardPruneXSquare state, x, y
     return true if @forwardPruneCSquare state, x, y
     return false
@@ -591,14 +539,14 @@ class Reversi
     turn = state.turn
     fliped = false
 
+    bestX = null; bestY = null
 
-    [bestX, bestY] = [-1, -1]
     [lastX, lastY] = state.lastMove
     [cur, end] = @killerTable.getListBeginEnd lastX, lastY
 
-    stateOrigAlpha = state.alpha
+    while cur isnt end
+      [x, y] = cur.data
 
-    doOneSearch = (x, y) =>
       loop
         if @forwardPrune state, x, y
           forwardPrunedSquares.push [x, y]
@@ -639,55 +587,23 @@ class Reversi
           return val
         if val > state.alpha
           state.alpha = val
-          bestX = x; bestY = y
 
           # updateKillerTable
           @killerTable.update lastX, lastY, x, y
 
         break
-      return null
-
-    [cachedX, cachedY] = [-1, -1]
-    if @enableHashTable
-      [cachedX, cachedY] = @hashTable.fetchMove state.board, state.turn
-      if cachedX isnt -1 or cachedY isnt -1
-        val = doOneSearch cachedX, cachedY
-        if val isnt null
-          return val
-
-    while cur isnt end
-      [x, y] = cur.data
-      continue if x is cachedX and y is cachedY
-
-      val = doOneSearch x, y
-      if val isnt null
-        return val
-
+        
       cur = cur.next
 
     ret = state.alpha
-    state.alpha = stateOrigAlpha
     if not fliped
       state.missTurn()
       ret = -@doSearch state
       state.rollback()
-    else
-      if @enableHashTable
-        @hashTable.hashMove state.board, state.turn, bestX, bestY
     return ret
 
   search: (state) ->
-    ret = -infVal
-    if @enableIterativeDeepening
-      searchDepthMax = @searchDepthMax
-      for depth in [1..searchDepthMax - 1] by 1
-        console.log "iterating depth #{depth} ..."
-        @searchDepthMax = depth
-        ret = @doSearch state
-      @searchDepthMax = searchDepthMax
-      console.log "iterating depth #{searchDepthMax} ..."
-    ret = @doSearch state
-    ret
+    @doSearch state
     
   branchingFactor: (nState, depth) ->
     Math.pow(nState, 1.0 / depth)
@@ -704,7 +620,6 @@ class Reversi
     @nZeroWindowCutoff = 0
     @nZeroWindowFail = 0
     @killerTable = new KillerTable board
-    @hashTable = new HashTable
     bestVal = -infVal - 1
     for x in [0..@n-1]
       for y in [0..@n-1]
@@ -721,7 +636,6 @@ class Reversi
           if val > bestVal
             [bestX, bestY, bestVal] = [x, y, val]
             console.log ["bestChoiceUpdate", bestX, bestY, bestVal]
-    @hashTable.clear()
     endTime = (new Date()).getTime()
     console.log "stats: total node searched: #{@nState}"
     console.log "stats: search depth max: #{@depthMax}"
