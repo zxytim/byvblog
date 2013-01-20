@@ -2,6 +2,7 @@ post = require('./post')
 feed = require('./feed')
 admin = require('./admin')
 test = require './test'
+applet = require './applet'
 
 routes = [
   {
@@ -52,6 +53,9 @@ routes = [
   }, {
     path: /^\/(\%.*)/
     GET: post.displayPost
+  }, {
+    path: /^\/applet\/(.+)/
+    GET: applet.index
   }
 ]
 

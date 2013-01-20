@@ -1,0 +1,116 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'install', 'profile', '-g' ]
+2 info using npm@1.1.65
+3 info using node@v0.8.14
+4 verbose read json /usr/lib/package.json
+5 verbose read json /usr/lib/package.json
+6 verbose cache add [ 'profile', null ]
+7 silly cache add name=undefined spec="profile" args=["profile",null]
+8 verbose parsed url { pathname: 'profile', path: 'profile', href: 'profile' }
+9 silly lockFile 5d45a009-profile profile
+10 verbose lock profile /root/.npm/5d45a009-profile.lock
+11 silly lockFile 5d45a009-profile profile
+12 verbose addNamed [ 'profile', '' ]
+13 verbose addNamed [ null, '' ]
+14 silly lockFile 55b8932c-profile profile@
+15 verbose lock profile@ /root/.npm/55b8932c-profile.lock
+16 silly addNameRange { name: 'profile', range: '', hasData: false }
+17 verbose url raw profile
+18 verbose url resolving [ 'https://registry.npmjs.org/', './profile' ]
+19 verbose url resolved https://registry.npmjs.org/profile
+20 info trying registry request attempt 1 at 05:39:59
+21 verbose etag "6KYG2LME16BDG7L7HYW5OUBKC"
+22 http GET https://registry.npmjs.org/profile
+23 http 304 https://registry.npmjs.org/profile
+24 silly registry.get cb [ 304,
+24 silly registry.get   { server: 'CouchDB/1.2.1 (Erlang OTP/R15B)',
+24 silly registry.get     etag: '"6KYG2LME16BDG7L7HYW5OUBKC"',
+24 silly registry.get     date: 'Sat, 19 Jan 2013 21:38:32 GMT',
+24 silly registry.get     'content-length': '0' } ]
+25 verbose etag profile from cache
+26 silly addNameRange number 2 { name: 'profile', range: '', hasData: true }
+27 silly addNameRange versions [ 'profile',
+27 silly addNameRange   [ '0.0.1',
+27 silly addNameRange     '0.0.2',
+27 silly addNameRange     '0.0.3',
+27 silly addNameRange     '0.0.4',
+27 silly addNameRange     '0.0.5',
+27 silly addNameRange     '0.0.6',
+27 silly addNameRange     '0.0.7',
+27 silly addNameRange     '0.0.8',
+27 silly addNameRange     '0.0.9',
+27 silly addNameRange     '0.0.10' ] ]
+28 verbose addNamed [ 'profile', '0.0.10' ]
+29 verbose addNamed [ '0.0.10', '0.0.10' ]
+30 silly lockFile b1ba14c1-profile-0-0-10 profile@0.0.10
+31 verbose lock profile@0.0.10 /root/.npm/b1ba14c1-profile-0-0-10.lock
+32 verbose read json /root/.npm/profile/0.0.10/package/package.json
+33 silly lockFile b1ba14c1-profile-0-0-10 profile@0.0.10
+34 silly lockFile 55b8932c-profile profile@
+35 silly resolved [ { name: 'profile',
+35 silly resolved     description: 'A script that makes profiling node.js apps easier.',
+35 silly resolved     version: '0.0.10',
+35 silly resolved     author: { name: 'Mathias Pettersson', email: 'mape@mape.me' },
+35 silly resolved     bin: { nodeprofile: './bin/nodeprofile' },
+35 silly resolved     engines: { node: '>= 0.2.0' },
+35 silly resolved     scripts: { preinstall: './scripts/preinstall.sh' },
+35 silly resolved     contributors:
+35 silly resolved      [ [Object],
+35 silly resolved        [Object],
+35 silly resolved        [Object],
+35 silly resolved        [Object],
+35 silly resolved        [Object],
+35 silly resolved        [Object],
+35 silly resolved        [Object] ],
+35 silly resolved     readme: '# node-profile\n\nA script that makes profiling node.js apps a little easier.\nCompatible with node v0.6.x\n\n## Installation\n\nVia [npm](http://github.com/isaacs/npm):\n\n    $ npm install profile\n\n## Usage\n### Output to stdout\n`> nodeprofile yourapp.js`\n### Output to file\n`> nodeprofile yourapp.js -o=profile.txt`\n### Lazy profiling (profiling disabled on startup)\nThis is useful if you want to profile certain areas of your code using [bnoordhuis/node-profiler](https://github.com/bnoordhuis/node-profiler):\n\n`> nodeprofile yourapp.js --prof_lazy`\n\n## "Dependencies"\n* python\n* [SCONS](http://www.scons.org/) (used to build the V8 debugger on first use) \n* That the `locate` command can find a copy of `linux-tick-processor` (or `mac-tick-processor` on OS X). This is bundled with node.js.\n\n## Pre-configuration\n\n    $ cd /usr/src/node\n    $ cd deps/v8\n    $ scons prof=on\n    $ export PATH="${PATH}:/usr/src/node/deps/v8"\n\n## Output\n\n<img src="http://mape.me/nodeprofile.png" alt="">\n',
+35 silly resolved     readmeFilename: 'README.md',
+35 silly resolved     _id: 'profile@0.0.10',
+35 silly resolved     _from: 'profile' } ]
+36 info install profile@0.0.10 into /usr/lib
+37 info installOne profile@0.0.10
+38 verbose from cache /root/.npm/profile/0.0.10/package/package.json
+39 info /usr/lib/node_modules/profile unbuild
+40 verbose read json /usr/lib/node_modules/profile/package.json
+41 verbose tar unpack /root/.npm/profile/0.0.10/package.tgz
+42 silly lockFile df056ee8-usr-lib-node-modules-profile /usr/lib/node_modules/profile
+43 verbose lock /usr/lib/node_modules/profile /root/.npm/df056ee8-usr-lib-node-modules-profile.lock
+44 silly gunzTarPerm modes [ '755', '644' ]
+45 silly gunzTarPerm extractEntry package.json
+46 silly gunzTarPerm extractEntry README.md
+47 silly gunzTarPerm extractEntry LICENSE
+48 silly gunzTarPerm extractEntry scripts/preinstall.sh
+49 silly gunzTarPerm extractEntry bin/nodeprofile
+50 silly gunzTarPerm extractEntry AUTHORS
+51 verbose read json /usr/lib/node_modules/profile/package.json
+52 silly lockFile df056ee8-usr-lib-node-modules-profile /usr/lib/node_modules/profile
+53 info preinstall profile@0.0.10
+54 verbose unsafe-perm in lifecycle false
+55 verbose set uid from=0 to=nobody
+56 verbose set uid from=0 to=99
+57 silly exec sh "-c" "./scripts/preinstall.sh"
+58 silly sh,-c,./scripts/preinstall.sh,/usr/lib/node_modules/profile spawning
+59 info profile@0.0.10 Failed to exec preinstall script
+60 info /usr/lib/node_modules/profile unbuild
+61 verbose from cache /usr/lib/node_modules/profile/package.json
+62 info preuninstall profile@0.0.10
+63 info uninstall profile@0.0.10
+64 verbose true,/usr/lib/node_modules,/usr/lib/node_modules unbuild profile@0.0.10
+65 verbose /usr/bin,[object Object] binRoot
+66 info postuninstall profile@0.0.10
+67 error profile@0.0.10 preinstall: `./scripts/preinstall.sh`
+67 error `sh "-c" "./scripts/preinstall.sh"` failed with 1
+68 error Failed at the profile@0.0.10 preinstall script.
+68 error This is most likely a problem with the profile package,
+68 error not with npm itself.
+68 error Tell the author that this fails on your system:
+68 error     ./scripts/preinstall.sh
+68 error You can get their info via:
+68 error     npm owner ls profile
+68 error There is likely additional logging output above.
+69 error System Linux 3.6.7-1-ARCH
+70 error command "/usr/bin/node" "/usr/bin/npm" "install" "profile" "-g"
+71 error cwd /home/zxytim/project/website/byvblog/assets/js/applet/reversi
+72 error node -v v0.8.14
+73 error npm -v 1.1.65
+74 error code ELIFECYCLE
+75 verbose exit [ 1, true ]

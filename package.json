@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "continuation app.coffee -e -c"
-    //"start": "NODE_ENV=production continuation app.coffee -e -c",
+    "start": "NODE_ENV=production continuation app.coffee -e -c",
     "test": "continuation app.coffee -e -c"
   },
   "dependencies": {
@@ -18,7 +17,9 @@
     "dateformat": "1.0.3-1.2.3",
     "marked": "0.2.5",
     "rss": "0.0.4",
-    "node-segment": "0.0.2"
+    "node-segment": "0.0.2",
+    "stylus": "0.32.0",
+    "nib": "0.8.2"
   },
   "devDependencies": {
     "jquery": "*"

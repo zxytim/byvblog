@@ -14,6 +14,7 @@ segment.loadDict('wildcard.txt')
 
 segmentation = (post) ->
   segments = segment.doSegment(post.contents[0].contents)
+  console.log segments
   words = {}
   for seg in segments
     words[seg.w] ?= 0

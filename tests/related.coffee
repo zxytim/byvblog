@@ -3,3 +3,4 @@ related = require('../middlewares/related')
 
 related.updateRelatedPosts obtain()
 console.log 'Done'
+process.exit()

@@ -1,0 +1,14 @@
+extends ../layout
+include ../includes/post
+
+block title
+  title= title
+  != css('reversi')
+
+block content
+  .reversi
+    
+
+block scripts
+  != js('applet/reversi')
+
